@@ -17,3 +17,6 @@ coverage/
 
 # Ignore local todo file
 todo.md 
+
+# Cursor rules
+.cursor/
