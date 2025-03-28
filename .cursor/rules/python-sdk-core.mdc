@@ -1,0 +1,119 @@
+---
+description: Comprehensive rules for transforming TypeScript SDK to Python for Compound V3
+globs: packages/python-sdk/**/*.py
+---
+ 
+
+# Python SDK Core Transformation Rules
+
+## Class Structure Conversion
+- Convert TypeScript class properties to Python class attributes in __init__
+- Move private TypeScript fields (_property) to Python (_property)
+- Convert TypeScript constructor to Python __init__
+- Transform getter/setter methods to @property decorators
+
+## Type System Migration
+- Replace TypeScript types with Python type hints:
+  ```typescript
+  // TypeScript
+  interface NetworkConfig {
+    cometProxyAddress: string;
+  }
+  ```
+  ```python
+  # Python
+  from dataclasses import dataclass
+  from typing import TypedDict
+
+  class NetworkConfig(TypedDict):
+      cometProxyAddress: str
+  ```
+
+## Contract Interaction Patterns
+- Transform ethers.js patterns to Web3.py:
+  ```typescript
+  // TypeScript
+  const contract = new ethers.Contract(address, abi, signer);
+  await contract.supply(asset, amount);
+  ```
+  ```python
+  # Python
+  contract = web3.eth.contract(address=address, abi=abi)
+  tx_hash = contract.functions.supply(asset, amount).transact({'from': account})
+  ```
+
+## Error Handling
+- Convert TypeScript try/catch to Python try/except
+- Transform ethers.js errors to Web3.py exceptions:
+  ```typescript
+  // TypeScript
+  try {
+    await contract.supply(asset, amount);
+  } catch (error) {
+    if (error.code === 'INSUFFICIENT_FUNDS') {
+      // handle error
+    }
+  }
+  ```
+  ```python
+  # Python
+  try:
+      tx_hash = contract.functions.supply(asset, amount).transact()
+  except Web3Exception as e:
+      if 'insufficient funds' in str(e).lower():
+          # handle error
+  ```
+
+## Async/Promise Handling
+- Convert TypeScript Promises to Python async/await:
+  ```typescript
+  // TypeScript
+  public async supply(): Promise<TransactionResponse>
+  ```
+  ```python
+  # Python
+  async def supply(self) -> TxReceipt:
+  ```
+
+## Event Handling
+- Transform ethers.js events to Web3.py events:
+  ```typescript
+  // TypeScript
+  contract.on("Supply", (supplier, amount) => {
+    // handle event
+  });
+  ```
+  ```python
+  # Python
+  def handle_event(event):
+      pass
+  
+  event_filter = contract.events.Supply.create_filter(fromBlock='latest')
+  ```
+
+## Configuration Management
+- Convert network configs:
+  ```typescript
+  // TypeScript
+  export const NETWORKS = {
+    sepolia: { cometProxyAddress: "0x..." }
+  };
+  ```
+  ```python
+  # Python
+  NETWORKS: Dict[str, NetworkConfig] = {
+      "sepolia": {"cometProxyAddress": "0x..."}
+  }
+  ```
+
+## Numeric Handling
+- Transform BigNumber operations:
+  ```typescript
+  // TypeScript
+  const amount = ethers.BigNumber.from("1000000");
+  ```
+  ```python
+  # Python
+  from decimal import Decimal
+  amount = Decimal("1000000")
+  ```

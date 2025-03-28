@@ -1,0 +1,81 @@
+---
+description: Comprehensive testing standards for Python SDK
+globs: packages/python-sdk/tests/**/*.py
+---
+
+# Python Testing Standards
+
+## Test Structure
+- Convert Jest describe/it to pytest style:
+  ```typescript
+  // TypeScript
+  describe("Comet SDK", () => {
+    it("should supply assets", async () => {
+      // test
+    });
+  });
+  ```
+  ```python
+  # Python
+  class TestCometSDK:
+      async def test_supply_assets(self):
+          # test
+  ```
+
+## Fixture Patterns
+- Transform beforeAll/beforeEach to pytest fixtures:
+  ```typescript
+  // TypeScript
+  beforeAll(() => {
+    const provider = new ethers.JsonRpcProvider();
+  });
+  ```
+  ```python
+  # Python
+  @pytest.fixture(scope="module")
+  def web3_provider():
+      return Web3(Web3.HTTPProvider())
+  ```
+
+## Assertion Conversion
+- Convert Jest assertions to pytest:
+  ```typescript
+  // TypeScript
+  expect(result).toBe(expected);
+  expect(promise).rejects.toThrow();
+  ```
+  ```python
+  # Python
+  assert result == expected
+  with pytest.raises(Exception):
+      await async_function()
+  ```
+
+## Mock Transformations
+- Convert Jest mocks to pytest-mock:
+  ```typescript
+  // TypeScript
+  jest.spyOn(contract, 'supply').mockResolvedValue(txReceipt);
+  ```
+  ```python
+  # Python
+  @pytest.fixture
+  def mock_contract(mocker):
+      return mocker.patch('web3.eth.Contract')
+  ```
+
+## Async Testing
+- Transform async test patterns:
+  ```typescript
+  // TypeScript
+  it("should handle async", async () => {
+    await expect(promise).resolves.toBe(value);
+  });
+  ```
+  ```python
+  # Python
+  @pytest.mark.asyncio
+  async def test_async_function():
+      result = await async_function()
+      assert result == expected
+  ```
